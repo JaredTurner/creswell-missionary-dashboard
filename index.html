@@ -4,111 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Missionary Fleet</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
-        [x-cloak] { display: none !important; } /* Hide content until Alpine loads */
+        [x-cloak] { display: none !important; }
+        /* Map styling */
+        #main-map { height: 400px; width: 100%; z-index: 1; }
+        @media (min-width: 768px) { #main-map { height: 500px; border-radius: 1rem; } }
+        /* Custom Pin - Face Cutout */
+        .custom-pin { background: transparent; border: none; }
+        .pin-inner { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.4); background: #334155;}
+        .pin-inner img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 
-<body x-data="missionaryApp()" class="min-h-screen p-6 md:p-12 antialiased">
+<body x-data="missionaryApp()" x-init="initApp()" class="min-h-screen antialiased pb-12">
 
-    <header class="mb-12 max-w-5xl mx-auto text-center">
-        <h1 class="text-4xl font-bold tracking-tight">Called to Serve</h1>
-        <p class="text-slate-400 mt-2 text-lg">Missionary Status & Information</p>
-    </header>
-    
-    <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="person in fleet" :key="person.id">
-            <div @click="openModal(person)" 
-                 class="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg">
-                <img :src="person.photo_url" alt="" class="w-16 h-16 rounded-full object-cover bg-slate-700">
-                <div class="flex-1 min-w-0">
-                    <h2 class="font-bold text-lg truncate" x-text="person.short_name"></h2>
-                    <p class="text-slate-300 text-sm truncate" x-text="person.mission_name"></p>
-                    <div class="mt-1.5 inline-flex items-center gap-1.5 bg-blue-900/30 text-blue-200 text-xs font-medium px-2.5 py-1 rounded-full">
-                        <span class="mdi mdi-timer-sand"></span>
-                        <span x-text="getDaysLeft(person.return_date) + ' Days Left'"></span>
+    <div class="relative w-full md:max-w-6xl md:mx-auto md:mt-6 shadow-2xl overflow-hidden border-b md:border border-slate-700 bg-slate-800">
+        <div id="main-map"></div>
+        
+        <div class="absolute top-4 left-4 z-[1000] bg-slate-900/90 backdrop-blur px-6 py-3 rounded-xl border border-slate-600 shadow-xl">
+            <h1 class="text-2xl font-bold text-white tracking-tight">Called to Serve</h1>
+            <div class="text-blue-300 text-sm font-medium flex items-center gap-2">
+                <span class="mdi mdi-earth"></span>
+                <span x-text="fleet.length + ' Missionaries currently serving'"></span>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-6 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="person in fleet" :key="person.id">
+                <div @click="openModal(person)" 
+                     class="group bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-blue-900/20 hover:shadow-lg">
+                    
+                    <img :src="person.photo_url" class="w-16 h-16 rounded-full object-cover border-2 border-slate-600 group-hover:border-blue-400 transition-colors">
+                    
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h2 class="font-bold text-lg truncate" x-text="person.short_name"></h2>
+                            <img :src="'https://flagcdn.com/w20/' + person.country_code + '.png'" class="rounded-sm opacity-70">
+                        </div>
+                        <p class="text-slate-400 text-sm truncate" x-text="person.mission_name"></p>
+                        
+                        <div class="mt-2 flex items-center gap-3 text-xs font-medium">
+                            <div class="text-blue-300 bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-900/50">
+                                <span x-text="getDaysLeft(person.return_date)"></span> days left
+                            </div>
+                            <div class="text-slate-500 truncate" x-show="person.president">
+                                <span class="mdi mdi-account-tie"></span>
+                                <span x-text="person.president"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
     </main>
 
     <div x-show="selectedPerson" x-cloak 
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-         
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="selectedPerson = null"></div>
+         class="fixed inset-0 z-[2000] flex items-center justify-center p-4"
+         x-transition.opacity>
+        
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="selectedPerson = null"></div>
 
-        <div class="relative w-full max-w-lg bg-slate-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+        <div class="relative w-full max-w-lg bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
              x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-             x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+             x-transition:enter-start="translate-y-8 opacity-0 scale-95"
+             x-transition:enter-end="translate-y-0 opacity-100 scale-100">
             
-             <button @click="selectedPerson = null" class="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 rounded-full text-slate-300 hover:text-white transition z-10">
-                <span class="mdi mdi-close text-xl"></span>
+            <button @click="selectedPerson = null" class="absolute top-4 right-4 z-10 p-2 bg-black/40 hover:bg-white/10 rounded-full transition">
+                <span class="mdi mdi-close text-white"></span>
             </button>
 
-            <div class="text-center p-8 bg-slate-800/50 border-b border-slate-700/50">
-                <img :src="selectedPerson.photo_url" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-xl border-4 border-slate-700">
-                <h2 class="text-2xl font-bold" x-text="selectedPerson.full_name"></h2>
-                <p class="text-blue-300 text-lg font-medium" x-text="selectedPerson.mission_name"></p>
+            <div class="text-center p-8 bg-gradient-to-b from-slate-800 to-slate-900">
+                <img :src="selectedPerson?.photo_url" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-slate-700 shadow-xl">
+                <h2 class="text-2xl font-bold text-white" x-text="selectedPerson?.full_name"></h2>
+                <p class="text-blue-400 font-medium" x-text="selectedPerson?.mission_name"></p>
+                
+                <div class="mt-6 grid grid-cols-2 gap-3 text-left">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700" x-show="selectedPerson?.president">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">President</div>
+                        <div class="text-sm font-semibold text-white" x-text="selectedPerson?.president"></div>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700" x-show="selectedPerson?.members">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Members (Country)</div>
+                        <div class="text-sm font-semibold text-white" x-text="selectedPerson?.members"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="p-6 space-y-8">
-                <div class="prose prose-invert prose-slate max-w-none">
-                    <h3 class="text-lg font-semibold mb-2">About the Mission</h3>
-                    <p class="text-slate-300 leading-relaxed" x-text="selectedPerson.description"></p>
+            <div class="p-6 space-y-6 bg-slate-900 border-t border-slate-800">
+                <div class="prose prose-invert prose-sm">
+                    <h3 class="text-slate-500 uppercase tracking-widest text-xs font-bold mb-2">About the Mission</h3>
+                    <p class="text-slate-300" x-text="selectedPerson?.description"></p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-slate-700/30 p-4 rounded-xl flex items-center gap-3 border border-slate-700/50">
-                        <img :src="'https://flagcdn.com/w40/' + selectedPerson.country_code + '.png'" class="w-10 h-auto rounded shadow-sm" alt="Flag">
-                        <div>
-                            <div class="font-bold" x-text="selectedPerson.country_name"></div>
-                            <div class="text-xs text-slate-400" x-text="selectedPerson.language"></div>
-                        </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 bg-slate-800 rounded-xl border border-slate-700">
+                        <div class="text-slate-500 text-xs font-bold uppercase mb-1">Return Date</div>
+                        <div class="text-white font-medium" x-text="formatDate(selectedPerson?.return_date)"></div>
                     </div>
-                    <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
-                        <div class="flex items-center gap-2 text-blue-300 mb-1">
-                            <span class="mdi mdi-timer-sand"></span>
-                            <span class="text-xs font-bold uppercase tracking-wider">Countdown</span>
-                        </div>
-                        <div class="text-2xl font-bold">
-                            <span x-text="getDaysLeft(selectedPerson.return_date)"></span>
-                            <span class="text-sm font-medium text-slate-400">days left</span>
-                        </div>
+                    <div class="p-3 bg-slate-800 rounded-xl border border-slate-700">
+                        <div class="text-slate-500 text-xs font-bold uppercase mb-1">Local Time</div>
+                        <div class="text-white font-medium" x-text="getLocalTime(selectedPerson?.timezone)"></div>
                     </div>
-                    <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
-                         <div class="flex items-center gap-2 text-orange-300 mb-1">
-                            <span class="mdi mdi-clock-outline"></span>
-                            <span class="text-xs font-bold uppercase tracking-wider">Local Time</span>
-                        </div>
-                        <div class="text-2xl font-bold" x-text="getLocalTime(selectedPerson.timezone)"></div>
-                    </div>
-                     <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
-                        <div class="flex items-center gap-2 text-green-300 mb-1">
-                           <span class="mdi mdi-calendar-arrow-left"></span>
-                           <span class="text-xs font-bold uppercase tracking-wider">Homecoming</span>
-                       </div>
-                       <div class="text-lg font-bold" x-text="formatDate(selectedPerson.return_date)"></div>
-                   </div>
                 </div>
-
-                <div class="rounded-2xl overflow-hidden border border-slate-700/50 shadow-md">
-                    <iframe width="100%" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-                            :src="'https://maps.google.com/maps?q=' + selectedPerson.latitude + ',' + selectedPerson.longitude + '&t=&z=12&ie=UTF8&iwloc=&output=embed'"
-                            class="filter grayscale-[50%] contrast-[1.1]">
-                    </iframe>
-                </div>
-
             </div>
         </div>
     </div>
@@ -116,170 +123,150 @@
     <script>
         function missionaryApp() {
             return {
-                // State for the modal popup
                 selectedPerson: null,
-
-                // Helper function to open modal
-                openModal(person) {
-                    this.selectedPerson = person;
-                    // Prevent body scrolling when modal is open
-                    document.body.style.overflow = 'hidden'; 
-                },
-
-                // watcher to restore scrolling when modal closes
-                init() {
-                    this.$watch('selectedPerson', value => {
-                        if (!value) document.body.style.overflow = '';
-                    })
-                },
+                map: null,
                 
-                // --- HELPER FUNCTIONS ---
-                // Calculate days remaining
-                getDaysLeft(dateString) {
-                    const returnDate = new Date(dateString);
-                    const now = new Date();
-                    const diffTime = returnDate - now;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    return diffDays > 0 ? diffDays : 0;
-                },
-                // Get current time in a specific timezone
-                getLocalTime(timezone) {
-                    try {
-                        return new Intl.DateTimeFormat('en-US', {
-                            timeZone: timezone,
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                        }).format(new Date());
-                    } catch (e) { return 'Unknown'; }
-                },
-                // Format date nicely (e.g., "Dec 31, 2025")
-                formatDate(dateString) {
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                },
-
-                // --- YOUR DATA GOES HERE ---
-                // This is a Javascript Array of Objects representing your fleet.
+                // --- YOUR FLEET DATABASE ---
                 fleet: [
                     {
                         id: "elder_anderson",
                         short_name: "Elder Anderson",
                         full_name: "Elder Vedder Anderson",
-                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
                         photo_url: "elderanderson.jpg", 
                         mission_name: "Brazil Fortaleza East Mission",
-                        description: "Fortaleza, a vibrant city on Brazil's northeastern coast, is known for its beautiful beaches, rich cultural history, and lively atmosphere." + 
-                                     "The climate is tropical, with hot temperatures year-round and a refreshing sea breeze.",
+                        description: "Fortaleza, a vibrant city on Brazil's northeastern coast, is known for its beautiful beaches, rich cultural history, and lively atmosphere. The climate is tropical, with hot temperatures year-round and a refreshing sea breeze.",
                         country_code: "br",
-                        country_name: "Brazil",
-                        language: "Portuguese",
-                        return_date: "2027-09-09", // Format: YYYY-MM-DD
-                        // Coordinates for the map center
+                        return_date: "2027-09-09",
                         latitude: -3.7319,
                         longitude: -38.5267,
-                        // Timezone database name for local time calculation
-                        timezone: "America/Fortaleza"
+                        timezone: "America/Fortaleza",
+                        // Stats
+                        president: "Steven J. Page", 
+                        members: "1.5 Million"
                     },
                     {
                         id: "elder_pratt",
                         short_name: "Elder Pratt",
                         full_name: "Elder Tyler Pratt",
-                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
                         photo_url: "elderpratt.jpg", 
                         mission_name: "Puerto Rico San Juan Mission",
-                        description: "The Puerto Rico San Juan Mission includes the vibrant capital city, known for" +
-                                      "its colorful Spanish colonial buildings and sandy beaches. The tropical" +
-                                      "climate creates a lush environment for this island territory of the United" +
-                                      "States. Spanish and English are widely spoken, with a culture deeply rooted in" +
-                                      "a blend of Taíno, African, and Spanish influences. San Juan's culture is" +
-                                      "celebrated through salsa music, the lively San Sebastián Street Festival, and" +
-                                      "traditional cuisine such as mofongo.",
+                        description: "The Puerto Rico San Juan Mission includes the vibrant capital city, known for its colorful Spanish colonial buildings and sandy beaches. Spanish and English are widely spoken, with a culture deeply rooted in a blend of Taíno, African, and Spanish influences.",
                         country_code: "pr",
-                        country_name: "Puerto Rico",
-                        language: "Spanish",
-                        return_date: "2026-07-16", // Format: YYYY-MM-DD
-                        // Coordinates for the map center
+                        return_date: "2026-07-16",
                         latitude: 18.4655,
                         longitude: -66.1057,
-                        // Timezone database name for local time calculation
-                        timezone: "America/Puerto_Rico"
+                        timezone: "America/Puerto_Rico",
+                        // Stats
+                        president: "Ruben Pomales",
+                        members: "23,000+"
                     },
                     {
                         id: "sister_anderson",
                         short_name: "Sister Anderson",
                         full_name: "Sister Izzy Anderson",
-                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
                         photo_url: "sisteranderson.jpg", 
                         mission_name: "Mendoza Argentina Mission",
-                        description: "In the foothills of the Andes, the Mendoza Mission serves a region " +
-                                     "renowned for its vineyards and as the center of the Argentine wine industry. " +
-                                     "Mendoza has a continental climate, ideal for the cultivation of grapes that " +
-                                     "produce world-class wines. Spanish is the spoken language, and the culture " +
-                                     "is heavily influenced by the wine-making process, along with outdoor activities " +
-                                     "like skiing and mountain climbing. The city's tree-lined streets and irrigation " +
-                                     "canals (acequias) are distinctive features of its urban landscape.",
+                        description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities like skiing and mountaineering.",
                         country_code: "ar",
-                        country_name: "Argentina",
-                        language: "Spanish",
-                        return_date: "2027-03-04", // Format: YYYY-MM-DD
-                        // Coordinates for the map center
+                        return_date: "2027-03-04",
                         latitude: -32.8895,
                         longitude: -68.8458,
-                        // Timezone database name for local time calculation
-                        timezone: "America/Argentina/Mendoza"
+                        timezone: "America/Argentina/Mendoza",
+                        // Stats
+                        president: "President Valenzuela", 
+                        members: "475,000+"
                     },
                     {
                         id: "sister_jackson",
                         short_name: "Sister Jackson",
                         full_name: "Sister Ruby Jackson",
-                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
                         photo_url: "sisterjackson.jpg", 
                         mission_name: "Arizona Mesa Mission",
-                        description: "This mission is set in a city known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. Mesa's climate is desert-like, with extremely hot summers and mild winters." + 
-                                     "The city has a strong Latter-day Saint cultural influence, visible in the presence of the Mesa Arizona Temple and the annual Mesa Easter Pageant." + 
-                                     "The area is a blend of suburban living and cultural sites, including the Mesa Arts Center," + 
-                                     "and it offers a variety of outdoor activities due to its proximity to the Superstition Mountains and the Salt River.",
+                        description: "Mesa is known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. The city has a strong cultural influence, visible in the presence of the Mesa Arizona Temple and the annual Easter Pageant.",
                         country_code: "us",
-                        country_name: "United States",
-                        language: "English",
-                        return_date: "2027-03-04", // Format: YYYY-MM-DD
-                        // Coordinates for the map center
+                        return_date: "2027-03-04",
                         latitude: 33.4152,
                         longitude: -111.8315,
-                        // Timezone database name for local time calculation
-                        timezone: "America/Phoenix"
+                        timezone: "America/Phoenix",
+                        // Stats
+                        president: "Christopher A. Lythgoe",
+                        members: "6.7 Million"
                     },
                     {
                         id: "sister_bowles",
                         short_name: "Sister Bowles",
                         full_name: "Sister Tylyn Bowles",
-                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
                         photo_url: "sisterbowles.jpg", 
                         mission_name: "Washington Spokane Mission",
-                        description: "Situated on the eastern side of Washington state, the Spokane Mission includes" +
-                                     "the city of Spokane and the surrounding Inland Northwest region. The climate" +
-                                     "is a dry continental, with a range of weather across the seasons. English is" +
-                                     "the primary language, and the area is known for its outdoor activities like" +
-                                     "hiking and skiing, as well as its historical significance as a mining and" +
-                                     "timber hub. The culture has a blend of urban and rural influences, with a" +
-                                     "strong sense of community and pride in the region's natural beauty.",
+                        description: "Situated on the eastern side of Washington state, the Spokane Mission includes the city of Spokane and the surrounding Inland Northwest region. The area is known for its outdoor activities like hiking and skiing.",
                         country_code: "us",
-                        country_name: "United States",
-                        language: "English",
-                        return_date: "2026-08-05", // Format: YYYY-MM-DD
-                        // Coordinates for the map center
+                        return_date: "2026-08-05",
                         latitude: 47.6588,
                         longitude: -117.426,
-                        // Timezone database name for local time calculation
-                        timezone: "America/Los_Angeles"
-                    },
-                ]
+                        timezone: "America/Los_Angeles",
+                        // Stats
+                        president: "O. Nolan Daines",
+                        members: "6.7 Million"
+                    }
+                ],
+
+                async initApp() {
+                    // 1. Initialize Leaflet Map
+                    this.map = L.map('main-map').setView([20, -10], 2);
+                    
+                    // 2. Add Dark Mode Tiles
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap &copy; CARTO',
+                        subdomains: 'abcd',
+                        maxZoom: 19
+                    }).addTo(this.map);
+
+                    // 3. Add Pins for Missionaries
+                    this.fleet.forEach(person => {
+                        const icon = L.divIcon({
+                            className: 'custom-pin',
+                            html: `<div class="pin-inner"><img src="${person.photo_url}"></div>`,
+                            iconSize: [45, 45],
+                            iconAnchor: [22, 45]
+                        });
+
+                        L.marker([person.latitude, person.longitude], {icon: icon})
+                         .addTo(this.map)
+                         .bindPopup(`<b>${person.short_name}</b><br>${person.mission_name}`)
+                         .on('click', () => this.openModal(person));
+                    });
+
+                    // 4. Load & Draw Mission Shapes
+                    try {
+                        const response = await fetch('missions.json');
+                        const data = await response.json();
+                        const features = data.result ? data.result.features : data.features;
+
+                        if (features) {
+                            // Filter: Only draw shapes that match our fleet's mission names
+                            const fleetMissions = this.fleet.map(p => p.mission_name);
+                            const relevantShapes = features.filter(f => 
+                                fleetMissions.includes(f.properties.name)
+                            );
+
+                            L.geoJSON(relevantShapes, {
+                                style: { color: '#60a5fa', weight: 2, fillOpacity: 0.1 }
+                            }).addTo(this.map);
+                        }
+                    } catch (e) {
+                        console.log("Could not load mission shapes. Ensure missions.json is in the repo.", e);
+                    }
+                },
+
+                openModal(person) { this.selectedPerson = person; },
+                getDaysLeft(d) { return Math.ceil((new Date(d) - new Date()) / (864e5)); },
+                getLocalTime(tz) { 
+                    try { return new Date().toLocaleTimeString('en-US', {timeZone: tz, hour:'numeric', minute:'2-digit'}); } 
+                    catch { return '--:--'; } 
+                },
+                formatDate(d) { return new Date(d).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}); }
             }
         }
     </script>
 </body>
-
 </html>
-
-
