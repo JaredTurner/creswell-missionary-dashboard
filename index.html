@@ -66,7 +66,8 @@
                             <img :src="'https://flagcdn.com/w20/' + person.country_code + '.png'" class="rounded-sm opacity-80 shadow-sm">
                         </div>
                         <p class="text-slate-400 text-sm truncate mb-3" x-text="person.mission_name"></p>
-                        <div class="flex items-center gap-2">
+                        
+                        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             <div class="bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-slate-600/50 flex items-center gap-1">
                                 <span class="mdi mdi-clock-outline text-xs"></span>
                                 <span x-text="getLocalTime(person.timezone)"></span>
@@ -140,12 +141,48 @@
                 </div>
             </div>
 
+            <div class="p-6 pb-0" x-show="selectedPerson?.slides && selectedPerson?.slides.length > 0">
+                <div class="relative rounded-xl overflow-hidden shadow-lg border border-slate-700 bg-slate-800 aspect-video group">
+                    <template x-for="(slide, index) in selectedPerson?.slides">
+                        <img :src="slide" 
+                             x-show="slideIndex === index"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute inset-0 w-full h-full object-cover">
+                    </template>
+
+                    <div x-show="selectedPerson?.slides?.length > 1">
+                        <button @click.stop="prevSlide()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
+                            <span class="mdi mdi-chevron-left text-2xl"></span>
+                        </button>
+                        <button @click.stop="nextSlide()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
+                            <span class="mdi mdi-chevron-right text-2xl"></span>
+                        </button>
+                        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                            <template x-for="(slide, index) in selectedPerson?.slides">
+                                <div class="w-1.5 h-1.5 rounded-full transition-all shadow-sm" :class="slideIndex === index ? 'bg-white scale-125' : 'bg-white/50'"></div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <a x-show="selectedPerson?.album_url" :href="selectedPerson.album_url" target="_blank" class="absolute top-2 right-2 bg-black/40 hover:bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-md transition flex items-center gap-1 shadow-sm border border-white/10">
+                        <span>All Photos</span>
+                        <span class="mdi mdi-open-in-new"></span>
+                    </a>
+                </div>
+            </div>
+
             <div class="p-6 space-y-6">
                 <div class="prose prose-sm prose-invert max-w-none">
                     <h3 class="text-slate-400 font-bold text-sm uppercase tracking-wide border-b border-slate-700 pb-2 mb-3">About the Mission</h3>
-                    <p class="text-slate-300 leading-relaxed" x-text="selectedPerson?.description"></p>
-                </div>
-                    <div class="flex items-center gap-3 mb-3 bg-slate-800 p-3 rounded-lg border border-slate-700">
+                    
+                    <p class="text-slate-300 leading-relaxed mb-4" x-text="selectedPerson?.description"></p>
+                    
+                    <div class="flex items-center gap-3 bg-slate-800 p-3 rounded-lg border border-slate-700">
                         <div class="bg-slate-700 p-2 rounded-full shadow-sm">
                             <span class="mdi mdi-account-tie text-slate-300 text-lg"></span>
                         </div>
@@ -154,9 +191,11 @@
                             <div class="text-sm font-bold text-white" x-text="selectedPerson?.president"></div>
                         </div>
                     </div>
+                </div>
+
                 <div>
                     <h3 class="text-slate-400 font-bold text-sm uppercase tracking-wide border-b border-slate-700 pb-2 mb-3">Region Statistics</h3>
-
+                    
                     <div class="grid grid-cols-2 gap-3" x-show="selectedPerson?.stats">
                         <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
                             <div class="text-[10px] uppercase font-bold text-blue-400 mb-1">Members</div>
@@ -190,6 +229,7 @@
             return {
                 selectedPerson: null,
                 showForecast: false,
+                slideIndex: 0,
                 mainMap: null,
                 modalMap: null,
                 missionShapes: null, 
@@ -208,7 +248,11 @@
                         latitude: -3.7319, longitude: -38.5267,
                         timezone: "America/Fortaleza",
                         president: "Steven J. Page",
-                        stats: { members: "1,525,436", stakes: "287", missions: "37", temples: "11", congregations: "2,096" }
+                        stats: { members: "1,525,436", stakes: "287", missions: "37", temples: "11", congregations: "2,096" },
+                        
+                        // CAROUSEL EXAMPLE
+                        // slides: ["anderson1.jpg", "anderson2.jpg", "anderson3.jpg"],
+                        // album_url: "http://googleusercontent.com..."
                     },
                     {
                         id: "elder_pratt",
@@ -223,6 +267,10 @@
                         timezone: "America/Puerto_Rico",
                         president: "Ruben Pomales",
                         stats: { members: "23,454", stakes: "5", missions: "1", temples: "1", congregations: "38" }
+
+                        // CAROUSEL EXAMPLE
+                        slides: ["elderpratt1.jpg", "elderpratt2.jpg", "elderpratt3.jpg", "elderpratt4.jpg", "elderpratt5.jpg"],
+                        album_url: "https://photos.app.goo.gl/Dfw5kSTsnAjjMzySA"
                     },
                     {
                         id: "sister_anderson",
@@ -269,32 +317,37 @@
                 ],
 
                 async initApp() {
-                    // 1. Setup Main Map (LIGHT TILES)
                     this.mainMap = L.map('main-map').setView([20, -10], 2);
                     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                         attribution: '&copy; OpenStreetMap', subdomains: 'abcd', maxZoom: 19
                     }).addTo(this.mainMap);
 
+                    const bounds = [];
                     this.fleet.forEach(person => {
                         const icon = L.divIcon({
                             className: 'custom-pin',
                             html: `<div class="pin-inner"><img src="${person.photo_url}"></div>`,
                             iconSize: [45, 45], iconAnchor: [22, 45]
                         });
-                        L.marker([person.latitude, person.longitude], {icon: icon})
+                        const latLng = [person.latitude, person.longitude];
+                        L.marker(latLng, {icon: icon})
                          .addTo(this.mainMap).on('click', () => this.openModal(person));
+                        bounds.push(latLng);
                     });
 
-                    // 2. Load Shapes with EXACT NAME MATCH (Cleaning " Mission")
+                    // Auto-Center the Map
+                    if (bounds.length > 0) {
+                        this.mainMap.fitBounds(bounds, { padding: [50, 50] });
+                    }
+
+                    // Load Shapes
                     try {
                         const res = await fetch('missions.json');
                         const data = await res.json();
                         this.missionShapes = data.result ? data.result.features : data.features;
                         
-                        // Extract "Clean Names" (Remove " Mission" from end)
                         const fleetMissionsClean = this.fleet.map(p => p.mission_name.replace(" Mission", ""));
                         
-                        // Draw on Main Map
                         L.geoJSON(this.missionShapes.filter(f => 
                             fleetMissionsClean.includes(f.properties.name)
                         ), {
@@ -308,22 +361,19 @@
 
                 openModal(person) {
                     this.selectedPerson = person;
+                    this.slideIndex = 0;
                     
-                    // Initialize Modal Map
                     setTimeout(() => {
                         if (this.modalMap) this.modalMap.remove(); 
                         this.modalMap = L.map('modal-map', { zoomControl: false });
                         
-                        // LIGHT TILES FOR MODAL TOO
                         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                             attribution: '', subdomains: 'abcd', maxZoom: 19
                         }).addTo(this.modalMap);
 
-                        // Strict Match Logic
                         if (this.missionShapes) {
                             const cleanName = person.mission_name.replace(" Mission", "");
                             const myShape = this.missionShapes.find(f => f.properties.name === cleanName);
-                            
                             if (myShape) {
                                 const layer = L.geoJSON(myShape, {
                                     style: { color: '#3b82f6', weight: 3, fillOpacity: 0.15 }
@@ -340,6 +390,16 @@
                     this.selectedPerson = null;
                 },
 
+                // CAROUSEL LOGIC
+                nextSlide() {
+                    if (!this.selectedPerson?.slides) return;
+                    this.slideIndex = (this.slideIndex + 1) % this.selectedPerson.slides.length;
+                },
+                prevSlide() {
+                    if (!this.selectedPerson?.slides) return;
+                    this.slideIndex = (this.slideIndex - 1 + this.selectedPerson.slides.length) % this.selectedPerson.slides.length;
+                },
+
                 async fetchWeather() {
                     for (let person of this.fleet) {
                         try {
@@ -350,6 +410,7 @@
                     }
                 },
                 
+                // Helpers
                 getWeatherIcon(code) {
                     if (code === undefined) return 'mdi-help-circle-outline';
                     if (code === 0) return 'mdi-weather-sunny';
@@ -377,8 +438,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
