@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-900 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missionary Fleet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; } /* Hide content until Alpine loads */
+    </style>
+</head>
+
+<body x-data="missionaryApp()" class="min-h-screen p-6 md:p-12 antialiased">
+
+    <header class="mb-12 max-w-5xl mx-auto text-center">
+        <h1 class="text-4xl font-bold tracking-tight">Called to Serve</h1>
+        <p class="text-slate-400 mt-2 text-lg">Missionary Status & Information</p>
+    </header>
+    
+    <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="person in fleet" :key="person.id">
+            <div @click="openModal(person)" 
+                 class="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg">
+                <img :src="person.photo_url" alt="" class="w-16 h-16 rounded-full object-cover bg-slate-700">
+                <div class="flex-1 min-w-0">
+                    <h2 class="font-bold text-lg truncate" x-text="person.short_name"></h2>
+                    <p class="text-slate-300 text-sm truncate" x-text="person.mission_name"></p>
+                    <div class="mt-1.5 inline-flex items-center gap-1.5 bg-blue-900/30 text-blue-200 text-xs font-medium px-2.5 py-1 rounded-full">
+                        <span class="mdi mdi-timer-sand"></span>
+                        <span x-text="getDaysLeft(person.return_date) + ' Days Left'"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </main>
+
+    <div x-show="selectedPerson" x-cloak 
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+         
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="selectedPerson = null"></div>
+
+        <div class="relative w-full max-w-lg bg-slate-800 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+            
+             <button @click="selectedPerson = null" class="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 rounded-full text-slate-300 hover:text-white transition z-10">
+                <span class="mdi mdi-close text-xl"></span>
+            </button>
+
+            <div class="text-center p-8 bg-slate-800/50 border-b border-slate-700/50">
+                <img :src="selectedPerson.photo_url" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-xl border-4 border-slate-700">
+                <h2 class="text-2xl font-bold" x-text="selectedPerson.full_name"></h2>
+                <p class="text-blue-300 text-lg font-medium" x-text="selectedPerson.mission_name"></p>
+            </div>
+
+            <div class="p-6 space-y-8">
+                <div class="prose prose-invert prose-slate max-w-none">
+                    <h3 class="text-lg font-semibold mb-2">About the Mission</h3>
+                    <p class="text-slate-300 leading-relaxed" x-text="selectedPerson.description"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-700/30 p-4 rounded-xl flex items-center gap-3 border border-slate-700/50">
+                        <img :src="'https://flagcdn.com/w40/' + selectedPerson.country_code + '.png'" class="w-10 h-auto rounded shadow-sm" alt="Flag">
+                        <div>
+                            <div class="font-bold" x-text="selectedPerson.country_name"></div>
+                            <div class="text-xs text-slate-400" x-text="selectedPerson.language"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
+                        <div class="flex items-center gap-2 text-blue-300 mb-1">
+                            <span class="mdi mdi-timer-sand"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider">Countdown</span>
+                        </div>
+                        <div class="text-2xl font-bold">
+                            <span x-text="getDaysLeft(selectedPerson.return_date)"></span>
+                            <span class="text-sm font-medium text-slate-400">days left</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
+                         <div class="flex items-center gap-2 text-orange-300 mb-1">
+                            <span class="mdi mdi-clock-outline"></span>
+                            <span class="text-xs font-bold uppercase tracking-wider">Local Time</span>
+                        </div>
+                        <div class="text-2xl font-bold" x-text="getLocalTime(selectedPerson.timezone)"></div>
+                    </div>
+                     <div class="bg-slate-700/30 p-4 rounded-xl border border-slate-700/50">
+                        <div class="flex items-center gap-2 text-green-300 mb-1">
+                           <span class="mdi mdi-calendar-arrow-left"></span>
+                           <span class="text-xs font-bold uppercase tracking-wider">Homecoming</span>
+                       </div>
+                       <div class="text-lg font-bold" x-text="formatDate(selectedPerson.return_date)"></div>
+                   </div>
+                </div>
+
+                <div class="rounded-2xl overflow-hidden border border-slate-700/50 shadow-md">
+                    <iframe width="100%" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+                            :src="'https://maps.google.com/maps?q=' + selectedPerson.latitude + ',' + selectedPerson.longitude + '&t=&z=12&ie=UTF8&iwloc=&output=embed'"
+                            class="filter grayscale-[50%] contrast-[1.1]">
+                    </iframe>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function missionaryApp() {
+            return {
+                // State for the modal popup
+                selectedPerson: null,
+
+                // Helper function to open modal
+                openModal(person) {
+                    this.selectedPerson = person;
+                    // Prevent body scrolling when modal is open
+                    document.body.style.overflow = 'hidden'; 
+                },
+
+                // watcher to restore scrolling when modal closes
+                init() {
+                    this.$watch('selectedPerson', value => {
+                        if (!value) document.body.style.overflow = '';
+                    })
+                },
+                
+                // --- HELPER FUNCTIONS ---
+                // Calculate days remaining
+                getDaysLeft(dateString) {
+                    const returnDate = new Date(dateString);
+                    const now = new Date();
+                    const diffTime = returnDate - now;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    return diffDays > 0 ? diffDays : 0;
+                },
+                // Get current time in a specific timezone
+                getLocalTime(timezone) {
+                    try {
+                        return new Intl.DateTimeFormat('en-US', {
+                            timeZone: timezone,
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                        }).format(new Date());
+                    } catch (e) { return 'Unknown'; }
+                },
+                // Format date nicely (e.g., "Dec 31, 2025")
+                formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                },
+
+                // --- YOUR DATA GOES HERE ---
+                // This is a Javascript Array of Objects representing your fleet.
+                fleet: [
+                    {
+                        id: "elder_anderson",
+                        short_name: "Elder Anderson",
+                        full_name: "Elder Vedder Anderson",
+                        // Use a real public URL for photos (e.g. Imgur, GitHub, or your hosting provider)
+                        photo_url: "https://i.imgur.com/PlaceYourImageHere.jpg", 
+                        mission_name: "Brazil Fortaleza East Mission",
+                        description: "Fortaleza, a vibrant city on Brazil's northeastern coast, is known for its beautiful beaches, rich cultural history, and lively atmosphere. The climate is tropical, with hot temperatures year-round and a refreshing sea breeze.",
+                        country_code: "br",
+                        country_name: "Brazil",
+                        language: "Portuguese",
+                        return_date: "2025-12-31", // Format: YYYY-MM-DD
+                        // Coordinates for the map center
+                        latitude: -3.7319,
+                        longitude: -38.5267,
+                        // Timezone database name for local time calculation
+                        timezone: "America/Fortaleza"
+                    },
+                    {
+                        id: "sister_turner",
+                        short_name: "Sister Turner",
+                        full_name: "Sister Emily Turner",
+                        photo_url: "https://i.imgur.com/PlaceYourImageHere.jpg", 
+                        mission_name: "Ohio Akron Mission",
+                        description: "Serving in the heart of the Midwest, the Ohio Akron mission covers a diverse area of cities, suburbs, and rural farmland. Missionaries here focus on community service and teaching.",
+                        country_code: "us",
+                        country_name: "United States",
+                        language: "English",
+                        return_date: "2026-06-15",
+                        latitude: 41.0814,
+                        longitude: -81.5190,
+                        timezone: "America/New_York"
+                    }
+                    // Add more missionary blocks here!
+                ]
+            }
+        }
+    </script>
+</body>
+</html>
