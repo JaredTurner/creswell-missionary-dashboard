@@ -71,10 +71,6 @@
                             <div class="bg-blue-900/30 text-blue-200 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-blue-500/20">
                                 <span x-text="getDaysLeft(person.return_date)"></span> Days Left
                             </div>
-                            <div class="bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-slate-600/50 flex items-center gap-1">
-                                <span class="mdi mdi-clock-outline text-xs"></span>
-                                <span x-text="getLocalTime(person.timezone)"></span>
-                            </div>
                             <div class="bg-orange-900/30 text-orange-200 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-orange-500/20 flex items-center gap-1" x-show="person.weather">
                                 <span class="mdi" :class="getWeatherIcon(person.weather?.current?.weather_code)"></span>
                                 <span x-text="Math.round(person.weather?.current?.temperature_2m) + '°F'"></span>
@@ -379,3 +375,4 @@
     </script>
 </body>
 </html>
+
