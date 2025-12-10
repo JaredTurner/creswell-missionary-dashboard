@@ -66,6 +66,7 @@
                             <img :src="'https://flagcdn.com/w20/' + person.country_code + '.png'" class="rounded-sm opacity-80 shadow-sm">
                         </div>
                         <p class="text-slate-400 text-sm truncate mb-3" x-text="person.mission_name"></p>
+                        <div class="flex items-center gap-2">
                             <div class="bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-slate-600/50 flex items-center gap-1">
                                 <span class="mdi mdi-clock-outline text-xs"></span>
                                 <span x-text="getLocalTime(person.timezone)"></span>
@@ -378,4 +379,5 @@
     </script>
 </body>
 </html>
+
 
