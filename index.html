@@ -47,7 +47,7 @@
                     <span x-text="fleet.length + ' Missionaries Serving'"></span>
                 </div>
             </div>
-            </div>
+        </div>
 
         <div id="main-map" class="w-full bg-slate-100"></div>
     </div>
@@ -70,6 +70,10 @@
                         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             <div class="bg-blue-900/30 text-blue-200 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-blue-500/20">
                                 <span x-text="getDaysLeft(person.return_date)"></span> Days Left
+                            </div>
+                            <div class="bg-slate-700/50 text-slate-300 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-slate-600/50 flex items-center gap-1">
+                                <span class="mdi mdi-clock-outline text-xs"></span>
+                                <span x-text="getLocalTime(person.timezone)"></span>
                             </div>
                             <div class="bg-orange-900/30 text-orange-200 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border border-orange-500/20 flex items-center gap-1" x-show="person.weather">
                                 <span class="mdi" :class="getWeatherIcon(person.weather?.current?.weather_code)"></span>
@@ -147,7 +151,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-slate-400 font-bold text-sm uppercase tracking-wide border-b border-slate-700 pb-2 mb-3">Reigon Statistics</h3>
+                    <h3 class="text-slate-400 font-bold text-sm uppercase tracking-wide border-b border-slate-700 pb-2 mb-3">Region Statistics</h3>
                     
                     <div class="flex items-center gap-3 mb-3 bg-slate-800 p-3 rounded-lg border border-slate-700">
                         <div class="bg-slate-700 p-2 rounded-full shadow-sm">
@@ -196,7 +200,7 @@
                 modalMap: null,
                 missionShapes: null, 
                 
-                // --- YOUR FLEET DATABASE ---
+                // --- FLEET DATA ---
                 fleet: [
                     {
                         id: "elder_anderson",
@@ -231,7 +235,7 @@
                         short_name: "Sister Anderson",
                         full_name: "Sister Izzy Anderson",
                         photo_url: "sisteranderson.jpg", 
-                        mission_name: "Argentina Mendoza Mission",
+                        mission_name: "Mendoza Argentina Mission",
                         description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities like skiing and mountaineering.",
                         country_code: "ar",
                         return_date: "2027-03-04",
@@ -287,16 +291,18 @@
                          .addTo(this.mainMap).on('click', () => this.openModal(person));
                     });
 
-                    // 2. Load Shapes with FUZZY MATCH
+                    // 2. Load Shapes with EXACT NAME MATCH (Cleaning " Mission")
                     try {
                         const res = await fetch('missions.json');
                         const data = await res.json();
                         this.missionShapes = data.result ? data.result.features : data.features;
                         
+                        // Extract "Clean Names" (Remove " Mission" from end)
+                        const fleetMissionsClean = this.fleet.map(p => p.mission_name.replace(" Mission", ""));
+                        
                         // Draw on Main Map
-                        const fleetMissions = this.fleet.map(p => p.mission_name);
                         L.geoJSON(this.missionShapes.filter(f => 
-                            fleetMissions.some(m => m.includes(f.properties.name))
+                            fleetMissionsClean.includes(f.properties.name)
                         ), {
                             style: { color: '#3b82f6', weight: 2, fillOpacity: 0.1 }
                         }).addTo(this.mainMap);
@@ -319,9 +325,11 @@
                             attribution: '', subdomains: 'abcd', maxZoom: 19
                         }).addTo(this.modalMap);
 
-                        // Find shape (Fuzzy Match: if fleet name contains map name)
+                        // Strict Match Logic
                         if (this.missionShapes) {
-                            const myShape = this.missionShapes.find(f => person.mission_name.includes(f.properties.name));
+                            const cleanName = person.mission_name.replace(" Mission", "");
+                            const myShape = this.missionShapes.find(f => f.properties.name === cleanName);
+                            
                             if (myShape) {
                                 const layer = L.geoJSON(myShape, {
                                     style: { color: '#3b82f6', weight: 3, fillOpacity: 0.15 }
@@ -375,5 +383,3 @@
     </script>
 </body>
 </html>
-
-
