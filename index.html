@@ -88,14 +88,29 @@
                 <h2 class="text-2xl font-bold text-white" x-text="selectedPerson?.full_name"></h2>
                 <p class="text-blue-400 font-medium" x-text="selectedPerson?.mission_name"></p>
                 
-                <div class="mt-6 grid grid-cols-2 gap-3 text-left">
-                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700" x-show="selectedPerson?.president">
-                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">President</div>
+                <div class="mt-6 text-left space-y-3">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center" x-show="selectedPerson?.president">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">President</div>
                         <div class="text-sm font-semibold text-white" x-text="selectedPerson?.president"></div>
                     </div>
-                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700" x-show="selectedPerson?.members">
-                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">Members (Country)</div>
-                        <div class="text-sm font-semibold text-white" x-text="selectedPerson?.members"></div>
+
+                    <div class="grid grid-cols-2 gap-2" x-show="selectedPerson?.stats">
+                        <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50">
+                            <div class="text-[9px] uppercase tracking-wider text-blue-400 font-bold">Members</div>
+                            <div class="text-xs font-mono text-slate-200" x-text="selectedPerson?.stats?.members"></div>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50">
+                            <div class="text-[9px] uppercase tracking-wider text-blue-400 font-bold">Congregations</div>
+                            <div class="text-xs font-mono text-slate-200" x-text="selectedPerson?.stats?.congregations"></div>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50">
+                            <div class="text-[9px] uppercase tracking-wider text-blue-400 font-bold">Stakes</div>
+                            <div class="text-xs font-mono text-slate-200" x-text="selectedPerson?.stats?.stakes"></div>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50">
+                            <div class="text-[9px] uppercase tracking-wider text-blue-400 font-bold">Temples</div>
+                            <div class="text-xs font-mono text-slate-200" x-text="selectedPerson?.stats?.temples"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,9 +155,15 @@
                         latitude: -3.7319,
                         longitude: -38.5267,
                         timezone: "America/Fortaleza",
-                        // Stats
-                        president: "Steven J. Page", 
-                        members: "1.5 Million"
+                        president: "Steven J. Page",
+                        // NEW: Detailed Church Stats
+                        stats: {
+                            members: "1,525,436",
+                            stakes: "287",
+                            missions: "37",
+                            temples: "11",
+                            congregations: "2,096"
+                        }
                     },
                     {
                         id: "elder_pratt",
@@ -156,9 +177,14 @@
                         latitude: 18.4655,
                         longitude: -66.1057,
                         timezone: "America/Puerto_Rico",
-                        // Stats
                         president: "Ruben Pomales",
-                        members: "23,000+"
+                        stats: {
+                            members: "23,454",
+                            stakes: "5",
+                            missions: "1",
+                            temples: "1",
+                            congregations: "38"
+                        }
                     },
                     {
                         id: "sister_anderson",
@@ -166,15 +192,20 @@
                         full_name: "Sister Izzy Anderson",
                         photo_url: "sisteranderson.jpg", 
                         mission_name: "Mendoza Argentina Mission",
-                        description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities like skiing and mountaineering.",
+                        description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities.",
                         country_code: "ar",
                         return_date: "2027-03-04",
                         latitude: -32.8895,
                         longitude: -68.8458,
                         timezone: "America/Argentina/Mendoza",
-                        // Stats
                         president: "President Valenzuela", 
-                        members: "475,000+"
+                        stats: {
+                            members: "491,160",
+                            stakes: "80",
+                            missions: "14",
+                            temples: "4",
+                            congregations: "732"
+                        }
                     },
                     {
                         id: "sister_jackson",
@@ -182,15 +213,20 @@
                         full_name: "Sister Ruby Jackson",
                         photo_url: "sisterjackson.jpg", 
                         mission_name: "Arizona Mesa Mission",
-                        description: "Mesa is known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. The city has a strong cultural influence, visible in the presence of the Mesa Arizona Temple and the annual Easter Pageant.",
+                        description: "Mesa is known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. The city has a strong cultural influence, visible in the presence of the Mesa Arizona Temple.",
                         country_code: "us",
                         return_date: "2027-03-04",
                         latitude: 33.4152,
                         longitude: -111.8315,
                         timezone: "America/Phoenix",
-                        // Stats
                         president: "Christopher A. Lythgoe",
-                        members: "6.7 Million"
+                        stats: {
+                            members: "444,789",
+                            stakes: "118",
+                            missions: "6",
+                            temples: "6",
+                            congregations: "904"
+                        }
                     },
                     {
                         id: "sister_bowles",
@@ -204,9 +240,14 @@
                         latitude: 47.6588,
                         longitude: -117.426,
                         timezone: "America/Los_Angeles",
-                        // Stats
                         president: "O. Nolan Daines",
-                        members: "6.7 Million"
+                        stats: {
+                            members: "282,266",
+                            stakes: "61",
+                            missions: "7",
+                            temples: "4",
+                            congregations: "473"
+                        }
                     }
                 ],
 
@@ -270,3 +311,4 @@
     </script>
 </body>
 </html>
+
