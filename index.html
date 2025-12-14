@@ -102,6 +102,13 @@
                 <img :src="selectedPerson?.photo_url" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-slate-700 shadow-xl">
                 <h2 class="text-2xl font-bold text-white" x-text="selectedPerson?.full_name"></h2>
                 <p class="text-blue-400 font-medium" x-text="selectedPerson?.mission_name"></p>
+                <div x-show="selectedPerson?.email">
+                    <a :href="'mailto:' + selectedPerson?.email" 
+                       class="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-blue-900/40 hover:scale-105 group">
+                        <span class="mdi mdi-email-heart-outline text-lg group-hover:animate-pulse"></span>
+                        <span>Send Some Love</span>
+                    </a>
+                </div>
             </div>
 
             <div class="p-4 grid grid-cols-3 gap-2 bg-slate-800/50 border-b border-slate-700">
@@ -240,7 +247,8 @@
                         id: "elder_anderson",
                         short_name: "Elder Anderson",
                         full_name: "Elder Vedder Anderson",
-                        photo_url: "elderanderson.jpg", 
+                        photo_url: "elderanderson.jpg",
+                        email: "vedder.anderson@missionary.org",
                         mission_name: "Brazil Fortaleza East Mission",
                         description: "Fortaleza, a vibrant city on Brazil's northeastern coast, is known for its beautiful beaches, rich cultural history, and lively atmosphere. The climate is tropical, with hot temperatures year-round and a refreshing sea breeze.",
                         country_code: "br",
@@ -259,6 +267,7 @@
                         short_name: "Elder Pratt",
                         full_name: "Elder Tyler Pratt",
                         photo_url: "elderpratt.jpg", 
+                        email: "tyler.pratt@missionary.org",
                         mission_name: "Puerto Rico San Juan Mission",
                         description: "The Puerto Rico San Juan Mission includes the vibrant capital city, known for its colorful Spanish colonial buildings and sandy beaches. Spanish and English are widely spoken, with a culture deeply rooted in a blend of Taíno, African, and Spanish influences.",
                         country_code: "pr",
@@ -276,7 +285,8 @@
                         id: "sister_anderson",
                         short_name: "Sister Anderson",
                         full_name: "Sister Izzy Anderson",
-                        photo_url: "sisteranderson.jpg", 
+                        photo_url: "sisteranderson.jpg",
+                        email: "izzy.anderson@missionary.org",
                         mission_name: "Argentina Mendoza Mission",
                         description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities like skiing and mountaineering.",
                         country_code: "ar",
@@ -290,7 +300,8 @@
                         id: "sister_jackson",
                         short_name: "Sister Jackson",
                         full_name: "Sister Ruby Jackson",
-                        photo_url: "sisterjackson.jpg", 
+                        photo_url: "sisterjackson.jpg",
+                        email: "ruby.jackson@missionary.org",
                         mission_name: "Arizona Mesa Mission",
                         description: "Mesa is known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. The city has a strong cultural influence, visible in the presence of the Mesa Arizona Temple and the annual Easter Pageant.",
                         country_code: "us",
@@ -304,7 +315,8 @@
                         id: "sister_bowles",
                         short_name: "Sister Bowles",
                         full_name: "Sister Tylyn Bowles",
-                        photo_url: "sisterbowles.jpg", 
+                        photo_url: "sisterbowles.jpg",
+                        email: "tylyn.bowles@missionary.org",
                         mission_name: "Washington Spokane Mission",
                         description: "Situated on the eastern side of Washington state, the Spokane Mission includes the city of Spokane and the surrounding Inland Northwest region. The area is known for its outdoor activities like hiking and skiing.",
                         country_code: "us",
@@ -443,6 +455,7 @@
     </script>
 </body>
 </html>
+
 
 
 
