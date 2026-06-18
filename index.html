@@ -201,7 +201,7 @@
     <script>
         function missionaryApp() {
             return {
-                filterState: 'active', // 'active', 'returned', or 'all'
+                filterState: 'active', 
                 selectedPerson: null,
                 showForecast: false,
                 slideIndex: 0,
@@ -210,141 +210,7 @@
                 shapeLayer: null,
                 modalMap: null,
                 missionShapes: null, 
-                
-                fleet: [
-                    {
-                        id: "elder_anderson",
-                        short_name: "Elder Anderson",
-                        full_name: "Elder Vedder Anderson",
-                        status: "active", // <-- NEW FIELD
-                        photo_url: "elderanderson.jpg", 
-                        mission_name: "Brazil Fortaleza East Mission",
-                        description: "Fortaleza, a vibrant city on Brazil's northeastern coast, is known for its beautiful beaches, rich cultural history, and lively atmosphere. The climate is tropical, with hot temperatures year-round and a refreshing sea breeze.",
-                        country_code: "br",
-                        return_date: "2027-09-09",
-                        latitude: -3.7319, longitude: -38.5267,
-                        timezone: "America/Fortaleza",
-                        president: "Steven J. Page",
-                        email: "vedder.anderson@missionary.org",
-                        stats: { members: "1,525,436", stakes: "287", missions: "37", temples: "11", congregations: "2,096" }
-                    },
-                    {
-                        id: "elder_pratt",
-                        short_name: "Elder Pratt",
-                        full_name: "Elder Tyler Pratt",
-                        status: "returned",
-                        photo_url: "elderpratt.jpg", 
-                        mission_name: "Puerto Rico San Juan Mission",
-                        description: "The Puerto Rico San Juan Mission includes the vibrant capital city, known for its colorful Spanish colonial buildings and sandy beaches. Spanish and English are widely spoken, with a culture deeply rooted in a blend of Taíno, African, and Spanish influences.",
-                        country_code: "pr",
-                        return_date: "2026-07-16",
-                        latitude: 18.4655, longitude: -66.1057,
-                        timezone: "America/Puerto_Rico",
-                        president: "Ruben Pomales",
-                        email: "tyler.pratt@missionary.org", 
-                        stats: { members: "23,454", stakes: "5", missions: "1", temples: "1", congregations: "38" },
-                        slides: ["elderpratt1.jpg", "elderpratt2.jpg", "elderpratt3.jpg", "elderpratt4.jpg", "elderpratt5.jpg"],
-                        album_url: "https://photos.app.goo.gl/Dfw5kSTsnAjjMzySA"
-                    },
-                    {
-                        id: "sister_anderson",
-                        short_name: "Sister Anderson",
-                        full_name: "Sister Izzy Anderson",
-                        status: "active",
-                        photo_url: "sisteranderson.jpg", 
-                        mission_name: "Argentina Mendoza Mission",
-                        description: "In the foothills of the Andes, the Mendoza Mission serves a region renowned for its vineyards and as the center of the Argentine wine industry. Spanish is the spoken language, and the culture is heavily influenced by outdoor activities like skiing and mountaineering.",
-                        country_code: "ar",
-                        return_date: "2027-03-04",
-                        latitude: -32.8895, longitude: -68.8458,
-                        timezone: "America/Argentina/Mendoza",
-                        president: "President Valenzuela", 
-                        email: "izzy.anderson@missionary.org",
-                        stats: { members: "491,160", stakes: "80", missions: "14", temples: "4", congregations: "732" }
-                    },
-                    {
-                        id: "sister_jackson",
-                        short_name: "Sister Jackson",
-                        full_name: "Sister Ruby Jackson",
-                        status: "active",
-                        photo_url: "sisterjackson.jpg", 
-                        mission_name: "Arizona Mesa Mission",
-                        description: "Mesa is known for its rich Latter-day Saint history and as a center for cultural events in the East Valley. The city has a strong cultural influence, visible in the presence of the Mesa Arizona Temple and the annual Easter Pageant.",
-                        country_code: "us",
-                        return_date: "2027-03-04",
-                        latitude: 33.4152, longitude: -111.8315,
-                        timezone: "America/Phoenix",
-                        president: "Christopher A. Lythgoe",
-                        email: "ruby.jackson@missionary.org",
-                        stats: { members: "444,789", stakes: "118", missions: "6", temples: "6", congregations: "904" }
-                    },
-                    {
-                        id: "sister_bowles",
-                        short_name: "Sister Bowles",
-                        full_name: "Sister Tylyn Bowles",
-                        status: "active",
-                        photo_url: "sisterbowles.jpg", 
-                        mission_name: "Washington Spokane Mission",
-                        description: "Situated on the eastern side of Washington state, the Spokane Mission includes the city of Spokane and the surrounding Inland Northwest region. The area is known for its outdoor activities like hiking and skiing.",
-                        country_code: "us",
-                        return_date: "2026-08-05",
-                        latitude: 47.6588, longitude: -117.426,
-                        timezone: "America/Los_Angeles",
-                        president: "O. Nolan Daines",
-                        email: "tylyn.bowles@missionary.org",
-                        stats: { members: "282,266", stakes: "61", missions: "7", temples: "4", congregations: "473" },
-                        slides: ["sisterbowles1.jpeg", "sisterbowles2.jpeg", "sisterbowles3.jpeg", "sisterbowles4.jpeg", "sisterbowles5.jpeg"],
-                        album_url: "" 
-                    },
-                    {
-                        id: "elder_stotts",
-                        short_name: "Elder Stotts",
-                        full_name: "Elder James Stotts",
-                        status: "active",
-                        photo_url: "elderstotts.jpg", 
-                        mission_name: "Michigan Lansing Mission",
-                        description: "Lansing is the capital of Michigan, known for its distinct four seasons, proximity to the Great Lakes, and rich automotive history. The area features a mix of urban centers and beautiful rural landscapes.",
-                        country_code: "us",
-                        return_date: "2028-03-01",
-                        latitude: 42.7325, longitude: -84.5555,
-                        timezone: "America/Detroit",
-                        president: "Larry R. Larson",
-                        email: "james.stotts@missionary.org",
-                        stats: { members: "45,635", stakes: "9", missions: "2", temples: "2", congregations: "95" }
-                    },
-                    {
-                        id: "sister_epperson",
-                        short_name: "Sister Epperson",
-                        full_name: "Sister Ellie Epperson",
-                        status: "active",
-                        photo_url: "sisterepperson.jpg", 
-                        mission_name: "Louisiana Baton Rouge Mission",
-                        description: "Baton Rouge is the capital of Louisiana, situated on the Mississippi River. The mission features a humid subtropical climate, rich Cajun and Creole culture, and historic southern landmarks.",
-                        country_code: "us",
-                        return_date: "2027-12-17",
-                        latitude: 30.4515, longitude: -91.1871,
-                        timezone: "America/Chicago",
-                        president: "Daniel Chard", 
-                        email: "ellie.epperson@missionary.org",
-                        stats: { members: "30,154", stakes: "7", missions: "1", temples: "1", congregations: "51" }
-                    },
-                    {
-                        id: "elder_clark",
-                        short_name: "Elder Clark",
-                        full_name: "Elder Bruce Clark",
-                        status: "active",
-                        photo_url: "elderclark.jpg", 
-                        mission_name: "Canada Edmonton Mission",
-                        description: "The Canada Edmonton Mission covers northern Alberta, Northeast British Columbia, and the vast Northwest Territories. The geography ranges from the beautiful Canadian Rockies to rolling prairies, with a climate known for warm summers and very cold winters.",
-                        country_code: "ca",
-                        return_date: "2028-07-01", 
-                        latitude: 53.5461, longitude: -113.4938,
-                        timezone: "America/Edmonton",
-                        president: "Alan Matheson", 
-                        email: "bruce.clark@missionary.org", 
-                        stats: { members: "85,916", stakes: "30", missions: "2", temples: "3", congregations: "241" }
-                    }
-                ],
+                fleet: [], // Initialized as an empty array; dynamically populated via fetch
 
                 filteredFleet() {
                     if (this.filterState === 'all') return this.fleet;
@@ -360,6 +226,15 @@
                     this.markerLayer = L.featureGroup().addTo(this.mainMap);
                     this.shapeLayer = L.featureGroup().addTo(this.mainMap);
 
+                    // Fetch dynamic database data
+                    try {
+                        const fleetRes = await fetch('fleet.json');
+                        this.fleet = await fleetRes.json();
+                    } catch (e) {
+                        console.error("Error loading fleet.json database file:", e);
+                    }
+
+                    // Fetch boundary maps
                     try {
                         const res = await fetch('missions.json');
                         const data = await res.json();
@@ -369,7 +244,6 @@
                     this.renderMap();
                     this.fetchWeather();
 
-                    // Watch for filter changes to redraw map
                     this.$watch('filterState', () => { this.renderMap(); });
                     this.$watch('selectedPerson', val => { if(!val) this.showForecast = false; });
                 },
