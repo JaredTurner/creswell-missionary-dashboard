@@ -207,10 +207,9 @@
                 slideIndex: 0,
                 mainMap: null,
                 markerLayer: null,
-                shapeLayer: null,
                 modalMap: null,
                 missionShapes: null, 
-                fleet: [], // Initialized as an empty array; dynamically populated via fetch
+                fleet: [],
 
                 filteredFleet() {
                     if (this.filterState === 'all') return this.fleet;
@@ -224,9 +223,7 @@
                     }).addTo(this.mainMap);
 
                     this.markerLayer = L.featureGroup().addTo(this.mainMap);
-                    this.shapeLayer = L.featureGroup().addTo(this.mainMap);
 
-                    // Fetch dynamic database data
                     try {
                         const fleetRes = await fetch('fleet.json');
                         this.fleet = await fleetRes.json();
@@ -234,7 +231,6 @@
                         console.error("Error loading fleet.json database file:", e);
                     }
 
-                    // Fetch boundary maps
                     try {
                         const res = await fetch('missions.json');
                         const data = await res.json();
@@ -250,7 +246,6 @@
 
                 renderMap() {
                     this.markerLayer.clearLayers();
-                    this.shapeLayer.clearLayers();
                     const bounds = [];
                     const activeSet = this.filteredFleet();
 
@@ -268,13 +263,6 @@
 
                     if (bounds.length > 0) {
                         this.mainMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 6 });
-                    }
-
-                    if (this.missionShapes) {
-                        const cleanNames = activeSet.map(p => p.mission_name.replace(" Mission", ""));
-                        L.geoJSON(this.missionShapes.filter(f => cleanNames.includes(f.properties.name)), {
-                            style: { color: '#3b82f6', weight: 2, fillOpacity: 0.1 }
-                        }).addTo(this.shapeLayer);
                     }
                 },
 
