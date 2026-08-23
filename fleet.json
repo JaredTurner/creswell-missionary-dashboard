@@ -144,7 +144,7 @@
         "short_name": "Elder Lewis",
         "full_name": "Elder Joseph Lewis",
         "status": "active",
-        "photo_url": "elderlewis.jpg",
+        "photo_url": "Elderlewis.jpg",
         "mission_name": "Mexico Villahermosa Mission",
         "description": "Villahermosa is the capital of Tabasco in southeast Mexico. The area features a tropical rainforest climate that is very hot and humid year-round, with a rich cultural history and lush landscapes.",
         "country_code": "mx",
@@ -152,7 +152,7 @@
         "latitude": 17.9895,
         "longitude": -92.9281,
         "timezone": "America/Mexico_City",
-        "president": "Update President Name",
+        "president": "Pedro A. Miranda",
         "email": "joseph.lewis@missionary.org",
         "stats": {
             "members": "1,528,708",
