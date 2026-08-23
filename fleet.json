@@ -138,5 +138,28 @@
         "president": "Alan Matheson",
         "email": "bruce.clark@missionary.org",
         "stats": { "members": "85,916", "stakes": "30", "missions": "2", "temples": "3", "congregations": "241" }
-    }
+    },
+        {
+        "id": "elder_lewis",
+        "short_name": "Elder Lewis",
+        "full_name": "Elder Joseph Lewis",
+        "status": "active",
+        "photo_url": "elderlewis.jpg",
+        "mission_name": "Mexico Villahermosa Mission",
+        "description": "Villahermosa is the capital of Tabasco in southeast Mexico. The area features a tropical rainforest climate that is very hot and humid year-round, with a rich cultural history and lush landscapes.",
+        "country_code": "mx",
+        "return_date": "2028-08-19",
+        "latitude": 17.9895,
+        "longitude": -92.9281,
+        "timezone": "America/Mexico_City",
+        "president": "Update President Name",
+        "email": "joseph.lewis@missionary.org",
+        "stats": {
+            "members": "1,528,708",
+            "stakes": "222",
+            "missions": "32",
+            "temples": "14",
+            "congregations": "1,843"
+        }
+        }
 ]
