@@ -139,7 +139,7 @@
         "email": "bruce.clark@missionary.org",
         "stats": { "members": "85,916", "stakes": "30", "missions": "2", "temples": "3", "congregations": "241" }
     },
-        {
+    {
         "id": "elder_lewis",
         "short_name": "Elder Lewis",
         "full_name": "Elder Joseph Lewis",
@@ -160,6 +160,6 @@
             "missions": "32",
             "temples": "14",
             "congregations": "1,843"
-        }
+    }
         }
 ]
